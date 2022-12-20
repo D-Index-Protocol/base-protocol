@@ -5,6 +5,25 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@D-Index-Protocol/base-protocol@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@D-Index-Protocol/base-protocol@workspace:."
+  dependencies:
+    "@commitlint/cli": ^17.1.2
+    "@commitlint/config-conventional": ^17.1.0
+    "@semaphore-protocol/contracts": ^2.6.1
+    commitizen: ^4.2.5
+    cz-conventional-changelog: ^3.3.0
+    husky: ^8.0.1
+    lint-staged: ^13.0.3
+    prettier: ^2.7.1
+    prettier-plugin-solidity: ^1.0.0-dev.24
+    rimraf: ^3.0.2
+    solhint: ^3.3.7
+    solhint-plugin-prettier: ^0.0.5
+  languageName: unknown
+  linkType: soft
+
 "@babel/code-frame@npm:^7.0.0":
   version: 7.18.6
   resolution: "@babel/code-frame@npm:7.18.6"
@@ -299,23 +318,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prb/foundry-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@prb/foundry-template@workspace:."
+"@openzeppelin/contracts@npm:4.7.3":
+  version: 4.7.3
+  resolution: "@openzeppelin/contracts@npm:4.7.3"
+  checksum: 18382fcacf7cfd652f5dd0e70c08f08ea74eaa8ff11e9f9850639ada70198ae01a3f9493d89a52d724f2db394e9616bf6258017804612ba273167cf657fbb073
+  languageName: node
+  linkType: hard
+
+"@semaphore-protocol/contracts@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "@semaphore-protocol/contracts@npm:2.6.1"
   dependencies:
-    "@commitlint/cli": ^17.1.2
-    "@commitlint/config-conventional": ^17.1.0
-    commitizen: ^4.2.5
-    cz-conventional-changelog: ^3.3.0
-    husky: ^8.0.1
-    lint-staged: ^13.0.3
-    prettier: ^2.7.1
-    prettier-plugin-solidity: ^1.0.0-dev.24
-    rimraf: ^3.0.2
-    solhint: ^3.3.7
-    solhint-plugin-prettier: ^0.0.5
-  languageName: unknown
-  linkType: soft
+    "@openzeppelin/contracts": 4.7.3
+    "@zk-kit/incremental-merkle-tree.sol": 1.3.1
+  checksum: c66ba23743ce76dd8006f026983bc4883fe167fd2a2f9fe389f652257e2e28fec0e8ec90709f874283da80275f9562510caa41cd43268c87e521adf7ce299e24
+  languageName: node
+  linkType: hard
 
 "@solidity-parser/parser@npm:^0.14.3, @solidity-parser/parser@npm:^0.14.5":
   version: 0.14.5
@@ -386,6 +404,13 @@ __metadata:
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: fd6bce2b674b6efc3db4c7c3d336bd70c90838e8439de639b909ce22f3720d21344f52427f1d9e57b265fcb7f6c018699b99e5e0c208a1a4823014269a6bf35b
+  languageName: node
+  linkType: hard
+
+"@zk-kit/incremental-merkle-tree.sol@npm:1.3.1":
+  version: 1.3.1
+  resolution: "@zk-kit/incremental-merkle-tree.sol@npm:1.3.1"
+  checksum: 8a9edd1490e5d2d5214573d633a15ce9db9b9574a2f961f7334973aa011308416fb8c67a3b9a9fee7135b33b05fef17dd2d9fc5560f6589d15edfb4b8ff6c46c
   languageName: node
   linkType: hard
 
