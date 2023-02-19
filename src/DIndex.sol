@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@semaphore-protocol/contracts/extensions/SemaphoreVoting.sol";
 
 contract DIndex is Ownable {
+    // CONSTANTS
+    uint256 private constant RATING_DELAY = 4 weeks;
     // STRUCTS
     struct Attribute {
         uint256 attributeId;
@@ -20,12 +22,14 @@ contract DIndex is Ownable {
         address qualifier;
         uint256 rating;
         uint256 attributeId;
+        uint256 lastRatingTime;
     }
 
     struct Dapp {
         string name;
         Attribute[] attributes;
-        mapping(address => Rating[]) ratings;
+        // qualifier -> attribute id -> Rating
+        mapping(address => mapping(uint256 => Rating)) ratings;
         uint256 globalCumulativeRating;
         uint256 globalAverage;
         address qualifier;
@@ -66,16 +70,24 @@ contract DIndex is Ownable {
         uint256 attributeIndex,
         uint256 rating
     ) external returns (uint256 average) {
+        uint256 attributeId = dapps[dappId].attributes[attributeIndex].attributeId;
+
         require(bytes(dapps[dappId].name).length > 0, "Dapp does not exists");
         require(bytes(dapps[dappId].attributes[attributeIndex].name).length > 0, "Attribute does not exists!");
         require(rating > 0, "Rating cannot be zero");
         require(rating <= 10, "The max rating is 10");
+        require(
+            block.timestamp >= dapps[dappId].ratings[msg.sender][attributeId].lastRatingTime,
+            "Cannot rate so often"
+        );
 
         dapps[dappId].globalCumulativeRating += rating;
         dapps[dappId].globalAverage = dapps[dappId].globalCumulativeRating / dapps[dappId].attributes.length;
-        dapps[dappId].ratings[msg.sender].push(
-            Rating(msg.sender, rating, dapps[dappId].attributes[attributeIndex].attributeId)
-        );
+
+        dapps[dappId].ratings[msg.sender][attributeId].lastRatingTime = block.timestamp + RATING_DELAY;
+        dapps[dappId].ratings[msg.sender][attributeId].qualifier = msg.sender;
+        dapps[dappId].ratings[msg.sender][attributeId].rating = rating;
+        dapps[dappId].ratings[msg.sender][attributeId].attributeId = attributeId;
 
         dapps[dappId].attributes[attributeIndex].totalRatings += 1;
         dapps[dappId].attributes[attributeIndex].cumulativeRating += rating;

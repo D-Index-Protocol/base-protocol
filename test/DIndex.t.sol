@@ -33,5 +33,9 @@ contract DIndexTest is PRBTest, StdCheats {
 
         uint256 attributeAvg = dIndex.getAttributeAverage(0, 0);
         assertEq(attributeAvg, 8);
+
+        vm.warp(block.timestamp + 4 weeks);
+
+        dIndex.rateDapp(0, 0, 10);
     }
 }
