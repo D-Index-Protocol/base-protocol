@@ -25,88 +25,89 @@ contract DIndex is Ownable {
         uint256 lastRatingTime;
     }
 
-    struct Dapp {
+    struct Index {
         string name;
         Attribute[] attributes;
         // qualifier -> attribute id -> Rating
         mapping(address => mapping(uint256 => Rating)) ratings;
         uint256 globalCumulativeRating;
         uint256 globalAverage;
-        address qualifier;
     }
 
     // variables
-    uint256 private currentDappId = 0;
-    mapping(uint256 => Dapp) public dapps;
+    uint256 private constant MULTIPLIER_PRECISION = 1e18;
+    uint256 private currentIndexId = 0;
+    mapping(uint256 => Index) public indices;
 
-    function createDappProfile(string memory name) external onlyOwner returns (uint256) {
+    function createIndexProfile(string memory name) external onlyOwner returns (uint256) {
         require(bytes(name).length > 0, "Name cannot be empty");
 
-        dapps[currentDappId].name = name;
-        dapps[currentDappId].globalCumulativeRating = 0;
-        dapps[currentDappId].globalAverage = 0;
+        indices[currentIndexId].name = name;
+        indices[currentIndexId].globalCumulativeRating = 0;
+        indices[currentIndexId].globalAverage = 0;
 
-        uint256 dappId = currentDappId;
-        currentDappId += 1;
+        uint256 indexId = currentIndexId;
+        currentIndexId += 1;
 
-        return dappId;
+        return indexId;
     }
 
     function addAttribute(
-        uint256 dappId,
+        uint256 indexId,
         uint256 attributeId,
         string memory name
     ) external returns (bool) {
-        require(bytes(dapps[dappId].name).length > 0, "Dapp does not exists");
+        require(bytes(indices[indexId].name).length > 0, "Index does not exists");
         require(bytes(name).length > 0, "Attribute name cannot be empty");
 
-        dapps[dappId].attributes.push(Attribute(attributeId, name, 0, 0, 0));
+        indices[indexId].attributes.push(Attribute(attributeId, name, 0, 0, 0));
 
         return true;
     }
 
-    function rateDapp(
-        uint256 dappId,
+    function rateIndex(
+        uint256 indexId,
         uint256 attributeIndex,
         uint256 rating
     ) external returns (uint256 average) {
-        uint256 attributeId = dapps[dappId].attributes[attributeIndex].attributeId;
+        uint256 attributeId = indices[indexId].attributes[attributeIndex].attributeId;
 
-        require(bytes(dapps[dappId].name).length > 0, "Dapp does not exists");
-        require(bytes(dapps[dappId].attributes[attributeIndex].name).length > 0, "Attribute does not exists!");
+        require(bytes(indices[indexId].name).length > 0, "Index does not exists");
+        require(bytes(indices[indexId].attributes[attributeIndex].name).length > 0, "Attribute does not exists!");
         require(rating > 0, "Rating cannot be zero");
         require(rating <= 10, "The max rating is 10");
         require(
-            block.timestamp >= dapps[dappId].ratings[msg.sender][attributeId].lastRatingTime,
+            block.timestamp >= indices[indexId].ratings[msg.sender][attributeId].lastRatingTime,
             "Cannot rate so often"
         );
 
-        dapps[dappId].globalCumulativeRating += rating;
-        dapps[dappId].globalAverage = dapps[dappId].globalCumulativeRating / dapps[dappId].attributes.length;
+        indices[indexId].globalCumulativeRating += rating;
+        indices[indexId].globalAverage = indices[indexId].globalCumulativeRating / indices[indexId].attributes.length;
 
-        dapps[dappId].ratings[msg.sender][attributeId].lastRatingTime = block.timestamp + RATING_DELAY;
-        dapps[dappId].ratings[msg.sender][attributeId].qualifier = msg.sender;
-        dapps[dappId].ratings[msg.sender][attributeId].rating = rating;
-        dapps[dappId].ratings[msg.sender][attributeId].attributeId = attributeId;
+        indices[indexId].ratings[msg.sender][attributeId].lastRatingTime = block.timestamp + RATING_DELAY;
+        indices[indexId].ratings[msg.sender][attributeId].qualifier = msg.sender;
+        indices[indexId].ratings[msg.sender][attributeId].rating = rating * 1e18;
+        indices[indexId].ratings[msg.sender][attributeId].attributeId = attributeId;
 
-        dapps[dappId].attributes[attributeIndex].totalRatings += 1;
-        dapps[dappId].attributes[attributeIndex].cumulativeRating += rating;
-        dapps[dappId].attributes[attributeIndex].average =
-            dapps[dappId].attributes[attributeIndex].cumulativeRating /
-            dapps[dappId].attributes[attributeIndex].totalRatings;
+        indices[indexId].attributes[attributeIndex].totalRatings += 1;
+        indices[indexId].attributes[attributeIndex].cumulativeRating += rating;
+        indices[indexId].attributes[attributeIndex].average =
+            indices[indexId].attributes[attributeIndex].cumulativeRating /
+            indices[indexId].attributes[attributeIndex].totalRatings;
 
-        return dapps[dappId].globalAverage;
+        return indices[indexId].globalAverage;
     }
 
-    function getDappAverage(uint256 dappId) external returns (uint256) {
-        return dapps[dappId].globalAverage;
+    function getIndexAverage(uint256 indexId) external returns (uint256) {
+        return indices[indexId].globalAverage;
     }
 
-    function getAttributeAverage(uint256 dappId, uint256 attributeIndex) external returns (uint256) {
-        return dapps[dappId].attributes[attributeIndex].average;
+    function getAttributeAverage(uint256 indexId, uint256 attributeIndex) external returns (uint256) {
+        uint256 eth = 1 ether;
+        return indices[indexId].attributes[attributeIndex].average;
     }
 
-    function getDappAttributes(uint256 dappId) external returns (Attribute[] memory attributes) {
-        return dapps[dappId].attributes;
+    function getIndexAttributes(uint256 indexId) external returns (Attribute[] memory attributes) {
+        return indices[indexId].attributes;
     }
 }
