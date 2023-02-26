@@ -53,11 +53,7 @@ contract DIndex is Ownable {
         return indexId;
     }
 
-    function addAttribute(
-        uint256 indexId,
-        uint256 attributeId,
-        string memory name
-    ) external returns (bool) {
+    function addAttribute(uint256 indexId, uint256 attributeId, string memory name) external returns (bool) {
         require(bytes(indices[indexId].name).length > 0, "Index does not exists");
         require(bytes(name).length > 0, "Attribute name cannot be empty");
 
@@ -68,11 +64,7 @@ contract DIndex is Ownable {
         return true;
     }
 
-    function rateIndex(
-        uint256 indexId,
-        uint256 attributeIndex,
-        uint256 rating
-    ) external returns (uint256 average) {
+    function rateIndex(uint256 indexId, uint256 attributeIndex, uint256 rating) external returns (uint256 average) {
         uint256 attributeId = indices[indexId].attributes[attributeIndex].attributeId;
 
         require(bytes(indices[indexId].name).length > 0, "Index does not exists");
