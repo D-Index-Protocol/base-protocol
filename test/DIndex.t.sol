@@ -60,5 +60,6 @@ contract DIndexTest is PRBTest, StdCheats {
         uint256 attributeAvg = dIndex.getAttributeAverage(0, 1);
         assertEq(globalIndexAvg, ((4 + 9 + 8 + 1) * MULTIPLIER_PRECISION) / 5);
         assertEq(attributeAvg, ((4 + 9) * MULTIPLIER_PRECISION) / 2);
+
     }
 }

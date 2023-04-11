@@ -11,6 +11,11 @@ contract DIndex is Ownable {
     uint256 private constant RATING_DELAY = 4 weeks;
     uint256 private constant MULTIPLIER_PRECISION = 1e18;
 
+    // TODO: events
+    event ProfileCreated(uint256 indexed indexId, string name);
+    event AttributeAdded(uint256 indexed indexId, uint256 attributeId);
+    event IndexRated(uint256 indexed indexId, uint256 attributeIndex, uint256 rating);
+
     // STRUCTS
     struct Attribute {
         uint256 attributeId;
@@ -50,6 +55,9 @@ contract DIndex is Ownable {
         uint256 indexId = currentIndexId;
         currentIndexId += 1;
 
+        // TODO: emit
+        emit ProfileCreated(indexId, name);
+
         return indexId;
     }
 
@@ -57,9 +65,13 @@ contract DIndex is Ownable {
         require(bytes(indices[indexId].name).length > 0, "Index does not exists");
         require(bytes(name).length > 0, "Attribute name cannot be empty");
 
+        // TODO check attribute id
         indices[indexId].attributes.push(
             Attribute(attributeId, name, 0 * MULTIPLIER_PRECISION, 0 * MULTIPLIER_PRECISION, 0 * MULTIPLIER_PRECISION)
         );
+
+        // TODO: emit event
+        emit AttributeAdded(indexId, attributeId);
 
         return true;
     }
@@ -89,6 +101,9 @@ contract DIndex is Ownable {
         indices[indexId].attributes[attributeIndex].average =
             (indices[indexId].attributes[attributeIndex].cumulativeRating * MULTIPLIER_PRECISION) /
             indices[indexId].attributes[attributeIndex].totalRatings;
+
+        // TODO: emit
+        emit IndexRated(indexId, attributeIndex, rating);
 
         return indices[indexId].globalAverage;
     }
