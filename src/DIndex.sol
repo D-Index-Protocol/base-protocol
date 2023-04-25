@@ -8,6 +8,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@semaphore-protocol/contracts/extensions/SemaphoreVoting.sol";
 
 contract DIndex is Ownable {
+    // ERRORS
+    error AlreadyExistentAttribute(uint256 attributeId);
+
     // CONSTANTS
     uint256 private constant RATING_DELAY = 4 weeks;
     uint256 private constant MULTIPLIER_PRECISION = 1e18;
@@ -80,7 +83,7 @@ contract DIndex is Ownable {
     function addAttribute(uint256 indexId, uint256 attributeId, string memory name) external returns (bool) {
         require(bytes(indices[indexId].name).length > 0, "Index does not exists");
         require(bytes(name).length > 0, "Attribute name cannot be empty");
-        
+
         Attribute[] memory attrs = indices[indexId].attributes;
 
         require(
@@ -88,9 +91,8 @@ contract DIndex is Ownable {
             string.concat("Max attributes items amount is ", Strings.toString(MAX_ATTRIBUTES_AMOUNT))
         );
 
-        require(!findAttributeName(attrs, name), "Attribute with the given name already exists.");
+        require(!findAttributeName(attributeId, attrs, name), "Attribute with the given name already exists.");
 
-        // TODO check attribute id
         indices[indexId].attributes.push(
             Attribute(attributeId, name, 0 * MULTIPLIER_PRECISION, 0 * MULTIPLIER_PRECISION, 0 * MULTIPLIER_PRECISION)
         );
@@ -144,13 +146,24 @@ contract DIndex is Ownable {
     }
 
     // UTILS
+
     function compareStrings(string memory a, string memory b) internal pure returns (bool) {
         return keccak256(bytes(a)) == keccak256(bytes(b));
     }
 
-    function findAttributeName(Attribute[] memory array, string memory _string) internal pure returns (bool) {
-        for (uint i = 0; i < array.length; i++) {
-            string memory stringToFind = array[i].name;
+    function findAttributeName(uint256 attributeIdToAdd, Attribute[] memory attrs, string memory _string)
+        internal
+        pure
+        returns (bool)
+    {
+        for (uint i = 0; i < attrs.length; i++) {
+            Attribute memory attribute = attrs[i];
+            string memory stringToFind = attribute.name;
+
+            if (attributeIdToAdd == attribute.attributeId) {
+                revert AlreadyExistentAttribute({ attributeId: attributeIdToAdd });
+            }
+
             bool exists = compareStrings(stringToFind, _string);
 
             if (exists == true) {

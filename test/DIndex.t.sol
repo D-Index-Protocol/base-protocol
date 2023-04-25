@@ -63,9 +63,6 @@ contract DIndexTest is PRBTest, StdCheats {
 
     }
 
-    // function testCreateAlreadyExistentIndex() public {
-    //     dIndex.createIndexProfile("Ethereum");
-    // }
     function testFailCreateAlreadyExistentAttribute() public {
         dIndex.addAttribute(0, 0, "Holders");
     }
