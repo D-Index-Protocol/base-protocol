@@ -91,7 +91,7 @@ contract DIndex is Ownable {
             string.concat("Max attributes items amount is ", Strings.toString(MAX_ATTRIBUTES_AMOUNT))
         );
 
-        require(!findAttributeName(attributeId, attrs, name), "Attribute with the given name already exists.");
+        require(!findAttribute(attributeId, attrs, name), "Attribute with the given name already exists.");
 
         indices[indexId].attributes.push(
             Attribute(attributeId, name, 0 * MULTIPLIER_PRECISION, 0 * MULTIPLIER_PRECISION, 0 * MULTIPLIER_PRECISION)
@@ -151,7 +151,7 @@ contract DIndex is Ownable {
         return keccak256(bytes(a)) == keccak256(bytes(b));
     }
 
-    function findAttributeName(uint256 attributeIdToAdd, Attribute[] memory attrs, string memory _string)
+    function findAttribute(uint256 attributeIdToAdd, Attribute[] memory attrs, string memory _string)
         internal
         pure
         returns (bool)
