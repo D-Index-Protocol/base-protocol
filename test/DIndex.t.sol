@@ -13,6 +13,8 @@ contract DIndexTest is PRBTest, StdCheats {
     DIndex internal dIndex;
 
     function setUp() public {
+        vm.startPrank(address(7));
+
         dIndex = new DIndex();
         dIndex.createIndexProfile("Ethereum");
 
@@ -51,6 +53,7 @@ contract DIndexTest is PRBTest, StdCheats {
         dIndex.addAttribute(0, 4, "Issuance");
 
         dIndex.rateIndex(0, 1, 4);
+        vm.stopPrank();
         vm.startPrank(address(69));
         dIndex.rateIndex(0, 1, 9);
         dIndex.rateIndex(0, 3, 8);
@@ -60,10 +63,15 @@ contract DIndexTest is PRBTest, StdCheats {
         uint256 attributeAvg = dIndex.getAttributeAverage(0, 1);
         assertEq(globalIndexAvg, ((4 + 9 + 8 + 1) * MULTIPLIER_PRECISION) / 5);
         assertEq(attributeAvg, ((4 + 9) * MULTIPLIER_PRECISION) / 2);
-
     }
 
     function testFailCreateAlreadyExistentAttribute() public {
+        dIndex.addAttribute(0, 0, "Holders");
+    }
+
+    function testFailIsNotIndexCreator() public {
+        vm.stopPrank();
+        vm.startPrank(address(12));
         dIndex.addAttribute(0, 0, "Holders");
     }
 }

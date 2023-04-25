@@ -57,6 +57,7 @@ contract DIndex is Ownable {
         mapping(address => mapping(uint256 => Rating)) ratings;
         uint256 globalCumulativeRating;
         uint256 globalAverage;
+        address indexCreator;
     }
 
     // variables
@@ -70,6 +71,7 @@ contract DIndex is Ownable {
         indices[currentIndexId].name = name;
         indices[currentIndexId].globalCumulativeRating = 0 * MULTIPLIER_PRECISION;
         indices[currentIndexId].globalAverage = 0 * MULTIPLIER_PRECISION;
+        indices[currentIndexId].indexCreator = msg.sender;
 
         uint256 indexId = currentIndexId;
         currentIndexId += 1;
@@ -83,6 +85,7 @@ contract DIndex is Ownable {
     function addAttribute(uint256 indexId, uint256 attributeId, string memory name) external returns (bool) {
         require(bytes(indices[indexId].name).length > 0, "Index does not exists");
         require(bytes(name).length > 0, "Attribute name cannot be empty");
+        require(msg.sender == indices[indexId].indexCreator, "Only the index creator can add attributes");
 
         Attribute[] memory attrs = indices[indexId].attributes;
 
